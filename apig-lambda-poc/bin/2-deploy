@@ -1,0 +1,8 @@
+#!/bin/bash
+set -eo pipefail
+DIR=$(dirname $(dirname $(realpath $0)))
+ARTIFACT_BUCKET=$(cat $DIR/bucket-name.txt)
+SECRET_TOKEN=$(jq -r .secretToken $DIR/secrets.json)
+CHANNEL_ID=$(jq -r .channelId $DIR/secrets.json)
+aws cloudformation package --template-file $DIR/template.yml --s3-bucket $ARTIFACT_BUCKET --output-template-file $DIR/out.yml
+aws cloudformation deploy --template-file $DIR/out.yml --stack-name apig-lambda-poc --capabilities CAPABILITY_NAMED_IAM --parameter-overrides "ChannelId=${CHANNEL_ID}" "SecretToken=${SECRET_TOKEN}"

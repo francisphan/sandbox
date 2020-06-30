@@ -1,0 +1,41 @@
+Parameters:
+  SecretToken:
+    Type: String
+  ChannelId:
+    Type: String
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: An AWS Lambda application that calls the Lambda API.
+Resources:
+  api:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: 'apig-lambda-poc'
+      StageName: test
+      TracingEnabled: true
+      OpenApiVersion: 3.0.2
+  function:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs12.x
+      CodeUri: dist/.
+      Description: Call the AWS Lambda API
+      Timeout: 10
+      # Function's execution role
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - AWSLambdaReadOnlyAccess
+        - AWSXrayWriteOnlyAccess
+      Tracing: Active
+      Environment:
+        Variables:
+          SecretToken: !Sub "${SecretToken}"
+          ChannelId: !Sub "${ChannelId}"
+      Events:
+        getEndpoint:
+          Type: Api
+          Properties:
+            RestApiId: !Ref api
+            Path: /
+            Method: GET

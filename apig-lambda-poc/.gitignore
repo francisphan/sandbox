@@ -1,0 +1,5 @@
+/node_modules
+/dist
+/bucket-name.txt
+/out.yml
+/secrets.json

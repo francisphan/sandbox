@@ -1,0 +1,5 @@
+#!/bin/bash
+BUCKET_ID=$(uuid)
+BUCKET_NAME=lambda-artifacts-$BUCKET_ID
+echo $BUCKET_NAME > $(dirname $(dirname $(realpath $0)))/bucket-name.txt
+aws s3 mb s3://$BUCKET_NAME
